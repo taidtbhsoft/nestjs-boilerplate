@@ -67,12 +67,12 @@ import { SharedModule } from './shared/shared.module';
           path: path.join(__dirname, '/i18n/'),
           watch: configService.isDevelopment,
         },
-        resolvers: [
-          { use: QueryResolver, options: ['lang'] },
-          AcceptLanguageResolver,
-          new HeaderResolver(['x-lang']),
-        ],
       }),
+      resolvers: [
+        { use: QueryResolver, options: ['lang'] },
+        AcceptLanguageResolver,
+        new HeaderResolver(['x-lang']),
+      ],
       imports: [SharedModule],
       inject: [ApiConfigService],
     }),
