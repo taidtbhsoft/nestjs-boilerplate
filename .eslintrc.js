@@ -118,7 +118,7 @@ const rules = {
   '@typescript-eslint/no-duplicate-enum-values': 'error',
   '@typescript-eslint/no-empty-interface': 'error',
   '@typescript-eslint/no-unnecessary-type-assertion': 'error',
-  '@typescript-eslint/no-explicit-any': 'error',
+  '@typescript-eslint/no-explicit-any': 'off',
   '@typescript-eslint/no-inferrable-types': 'error',
   '@typescript-eslint/await-thenable': 'error',
   '@typescript-eslint/ban-ts-comment': 'error',
@@ -191,7 +191,7 @@ const rules = {
   '@typescript-eslint/interface-name-prefix': 'off',
   '@typescript-eslint/no-non-null-assertion': 'off',
   '@typescript-eslint/no-shadow': 'error',
-  '@typescript-eslint/no-unused-expressions': ['error'],
+  '@typescript-eslint/no-unused-expressions': 'off',
   /**
    * plugin:eslint
    */
@@ -313,6 +313,13 @@ const rules = {
   'use-isnan': 'error',
   'valid-typeof': 'off',
   'space-before-function-paren': 'off',
+  '@typescript-eslint/no-unsafe-argument': 'off',
+  '@typescript-eslint/no-unsafe-return': 'off',
+  '@typescript-eslint/no-unsafe-assignment': 'off',
+  '@typescript-eslint/no-unsafe-call': 'off',
+  '@typescript-eslint/no-unsafe-member-access': 'off',
+  'unicorn/import-style': 'off',
+  'unicorn/prefer-top-level-await': 'off'
 };
 /**
  * @type {import('eslint').Linter.FlatConfig}

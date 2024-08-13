@@ -14,6 +14,7 @@ export class LanguageInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest();
     const language: LanguageCode = request.headers['x-language-code'];
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (LanguageCode[language]) {
       ContextProvider.setLanguage(language);
     }

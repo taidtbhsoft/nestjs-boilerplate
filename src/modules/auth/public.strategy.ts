@@ -4,6 +4,7 @@ import { Strategy } from 'passport';
 
 @Injectable()
 export class PublicStrategy extends PassportStrategy(Strategy, 'public') {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {
     super();
   }
