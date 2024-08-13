@@ -9,6 +9,7 @@
         "ES2021.String"
     ],
     "emitDecoratorMetadata": true ,
+    "skipLibCheck":true
   },
   "include": [
     "src/**/*.ts",

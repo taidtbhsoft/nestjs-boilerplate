@@ -125,10 +125,7 @@ const rules = {
   '@typescript-eslint/ban-tslint-comment': 'error',
   '@typescript-eslint/consistent-indexed-object-style': 'error',
   '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
-  '@typescript-eslint/consistent-type-imports': [
-    'error',
-    {prefer: 'type-imports', fixStyle: 'separate-type-imports'},
-  ],
+  '@typescript-eslint/consistent-type-imports': 'off',
   '@typescript-eslint/no-misused-new': 'error',
   '@typescript-eslint/restrict-template-expressions': 'off',
   '@typescript-eslint/no-require-imports': 'error',
@@ -319,7 +316,7 @@ const rules = {
   '@typescript-eslint/no-unsafe-call': 'off',
   '@typescript-eslint/no-unsafe-member-access': 'off',
   'unicorn/import-style': 'off',
-  'unicorn/prefer-top-level-await': 'off'
+  'unicorn/prefer-top-level-await': 'off',
 };
 /**
  * @type {import('eslint').Linter.FlatConfig}

@@ -29,7 +29,6 @@ import { supportedLanguageCount } from '../constants';
 import type { Constructor } from '../types';
 import { ApiEnumProperty, ApiUUIDProperty } from './property.decorators';
 import {
-  PhoneNumberSerializer,
   ToArray,
   ToBoolean,
   ToLowerCase,
@@ -38,7 +37,6 @@ import {
 import {
   IsNullable,
   IsPassword,
-  IsPhoneNumber,
   IsTmpKey as IsTemporaryKey,
   IsUndefinable,
 } from './validator.decorators';
@@ -137,7 +135,7 @@ export function StringField(
     );
   }
 
-  const minLength = options.minLength || 1;
+  const minLength = options.minLength ?? 1;
 
   decorators.push(MinLength(minLength, { each: options.each }));
 
@@ -413,7 +411,7 @@ export function EmailFieldOptional(
 export function PhoneField(
   options: Omit<ApiPropertyOptions, 'type'> & IFieldOptions = {},
 ): PropertyDecorator {
-  const decorators = [IsPhoneNumber(), PhoneNumberSerializer()];
+  const decorators = [];
 
   if (options.nullable) {
     decorators.push(IsNullable());

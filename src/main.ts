@@ -21,7 +21,6 @@ import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
 import { TranslationInterceptor } from './interceptors/translation-interceptor.service';
 import { LoggerService } from './logger/logger.service';
 import { setupSwagger } from './setup-swagger';
-import { LoggerMiddleware } from './shared/middleware/logger.middleware';
 import { ApiConfigService } from './shared/services/api-config.service';
 import { TranslationService } from './shared/services/translation.service';
 import { SharedModule } from './shared/shared.module';
@@ -40,6 +39,7 @@ export async function bootstrap(): Promise<NestExpressApplication> {
     app.use(compression());
     app.use(morgan('combined'));
     app.enableVersioning();
+    app.setGlobalPrefix('/api/v1');
 
     const reflector = app.get(Reflector);
 
@@ -79,10 +79,6 @@ export async function bootstrap(): Promise<NestExpressApplication> {
     }
 
     app.useLogger(new LoggerService());
-
-    if (!configService.isTest) {
-      app.use(LoggerMiddleware);
-    }
 
     const port = configService.appConfig.port;
     await app.listen(port);

@@ -4,7 +4,7 @@ import type {
   NestInterceptor,
 } from '@nestjs/common';
 import { Injectable, Logger } from '@nestjs/common';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import type { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
