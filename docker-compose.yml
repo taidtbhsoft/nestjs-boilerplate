@@ -1,21 +1,24 @@
-version: "3"
 services:
   app:
     env_file:
       - .env
-    container_name: awesome_nest_boilerplate
-    restart: always
+    container_name: nest_boilerplate
     build: .
     ports:
       - "$PORT:$PORT"
-    links:
+    depends_on:
       - postgres
+    networks:
+      - app-network
+    volumes:
+      - type: bind
+        source: .
+        target: /usr/src/app
   postgres:
     image: postgres
-    container_name: postgres
-    restart: always
+    container_name: nest_postgres
     environment:
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
       TZ: 'GMT'
       PGTZ: 'GMT'
     ports:
@@ -25,18 +28,20 @@ services:
       - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
     env_file:
       - .env
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
-    ports:
-      - "8080:80"
-    volumes:
-      - /data/pgadmin:/root/.pgadmin
-    env_file:
-      - .env
-    links:
-      - postgres
-
+    networks:
+      - app-network
+  redis:
+      image: redis
+      container_name: nest_redis
+      ports:
+        - '6379:6379'
+      command: redis-server
+      networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge
 volumes:
   postgres:
     driver: local
+

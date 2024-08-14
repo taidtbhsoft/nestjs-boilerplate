@@ -88,3 +88,4 @@ db-data
 
 .hygen/
 .husky/
+build/
