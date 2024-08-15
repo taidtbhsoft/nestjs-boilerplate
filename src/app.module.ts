@@ -2,11 +2,18 @@ import './boilerplate.polyfill';
 
 import path from 'node:path';
 
+import {
+  CacheInterceptor,
+  CacheModule,
+  CacheStore,
+} from '@nestjs/cache-manager';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import * as redisStore from 'cache-manager-redis-store';
 import { ClsModule } from 'nestjs-cls';
 import {
   AcceptLanguageResolver,
@@ -14,6 +21,7 @@ import {
   I18nModule,
   QueryResolver,
 } from 'nestjs-i18n';
+import type { RedisClientOptions } from 'redis';
 import { DataSource } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 
@@ -78,8 +86,27 @@ import { SharedModule } from './shared/shared.module';
       inject: [ApiConfigService],
     }),
     ScheduleModule.forRoot(),
+    process.env.REDIS_CACHE_ENABLED === 'true'
+      ? CacheModule.register<RedisClientOptions>({
+          isGlobal: true,
+          ttl: 5, // seconds
+          max: 10, // maximum number of items in cache
+          store: redisStore as unknown as CacheStore,
+          // Store-specific configuration:
+          url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+        })
+      : CacheModule.register({
+          isGlobal: true,
+          ttl: 5, // seconds
+          max: 10, // maximum number of items in cache
+        }),
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
