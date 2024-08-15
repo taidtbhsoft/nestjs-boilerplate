@@ -47,6 +47,7 @@ function explore(instance: Object, propertyKey: string | symbol) {
   for (const [key, value] of Object.entries(parametersWithType)) {
     const keyPair = key.split(':');
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
     if (Number(keyPair[0]) === RouteParamtypes.BODY) {
       return value.type;
     }

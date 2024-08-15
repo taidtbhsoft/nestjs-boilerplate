@@ -35,6 +35,7 @@ export class AbstractClientService<ActionType> {
       class?: Constructor<R>;
       isPage?: boolean;
     }>,
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   ): Promise<R | PageDto<R> | void> {
     const returnData = await firstValueFrom(
       this.client.send<{ data?: R; meta?: PageMetaDto }>(pattern, data),
