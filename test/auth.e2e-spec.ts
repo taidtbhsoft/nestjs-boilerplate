@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 
@@ -6,6 +7,11 @@ import { initTest } from './init-testing-app';
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
   let accessToken: string;
+  // Init mock data
+  const firstName = faker.person.firstName();
+  const lastName = faker.person.lastName();
+  const email = faker.internet.email({ firstName, lastName });
+  const password = 'password';
 
   beforeAll(async () => {
     app = await initTest();
@@ -15,10 +21,10 @@ describe('AuthController (e2e)', () => {
     request(app.getHttpServer())
       .post('/auth/register')
       .send({
-        firstName: 'John',
-        lastName: 'Smith',
-        email: 'john@smith.com',
-        password: 'password',
+        firstName,
+        lastName,
+        email,
+        password,
       })
       .expect(200));
 
@@ -26,8 +32,8 @@ describe('AuthController (e2e)', () => {
     const response = await request(app.getHttpServer())
       .post('/auth/login')
       .send({
-        email: 'john@smith.com',
-        password: 'password',
+        email,
+        password,
       })
       .expect(200);
 
