@@ -24,3 +24,7 @@ To build the App, run
 ```bash
 yarn build:prod
 ```
+## Run test
+```bash
+yarn test:e2e
+```

@@ -1,20 +1,14 @@
 import type { INestApplication } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
 import request from 'supertest';
 
-import { AppModule } from '../src/app.module';
+import { initTest } from './init-testing-app';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
   let accessToken: string;
 
   beforeAll(async () => {
-    const moduleFixture = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
+    app = await initTest();
   });
 
   it('/auth/register (POST)', () =>
