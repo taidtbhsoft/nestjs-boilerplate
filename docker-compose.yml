@@ -3,7 +3,7 @@ services:
     env_file:
       - .env
     container_name: nest_boilerplate
-    build: .
+    dockerfile: Dockerfile
     ports:
       - "$PORT:$PORT"
     depends_on:

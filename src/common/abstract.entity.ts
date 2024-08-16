@@ -1,17 +1,14 @@
 import {
-  Column,
   CreateDateColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-import { LanguageCode } from '../constants';
-import type { Constructor } from '../types';
-import type { AbstractDto, AbstractTranslationDto } from './dto/abstract.dto';
+import type { AbstractDto } from './dto/abstract.dto';
+import type { Constructor } from './types';
 
 /**
  * Abstract Entity
- * @author Narek Hakobyan <narek.hakobyan.07@gmail.com>
  *
  * @description This class is an abstract class for all entities.
  * It's experimental and recommended using it only in microservice architecture,
@@ -22,7 +19,7 @@ export abstract class AbstractEntity<
   O = never,
 > {
   @PrimaryGeneratedColumn('uuid')
-  id!: Uuid;
+  id!: string;
 
   @CreateDateColumn({
     type: 'timestamp',
@@ -33,8 +30,6 @@ export abstract class AbstractEntity<
     type: 'timestamp',
   })
   updatedAt!: Date;
-
-  translations?: AbstractTranslationEntity[];
 
   private dtoClass?: Constructor<DTO, [AbstractEntity, O?]>;
 
@@ -49,12 +44,4 @@ export abstract class AbstractEntity<
 
     return new dtoClass(this, options);
   }
-}
-
-export class AbstractTranslationEntity<
-  DTO extends AbstractTranslationDto = AbstractTranslationDto,
-  O = never,
-> extends AbstractEntity<DTO, O> {
-  @Column({ type: 'enum', enum: LanguageCode })
-  languageCode!: LanguageCode;
 }

@@ -1,27 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { plainToClass } from 'class-transformer';
 import type { FindOptionsWhere } from 'typeorm';
 import { Repository } from 'typeorm';
 import { Transactional } from 'typeorm-transactional';
 
 import type { PageDto } from '../../common/dto/page.dto';
-import { UserNotFoundException } from '../../exceptions';
+import { UserNotFoundException } from '../../common/exceptions';
 import { UserRegisterDto } from '../auth/dto/user-register.dto';
-import { CreateSettingsCommand } from './commands/create-settings.command';
-import { CreateSettingsDto } from './dtos/create-settings.dto';
 import type { UserDto } from './dtos/user.dto';
 import type { UsersPageOptionsDto } from './dtos/users-page-options.dto';
 import { UserEntity } from './user.entity';
-import type { UserSettingsEntity } from './user-settings.entity';
+import { DBNameConnections } from '../../common/constants/db-name';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(UserEntity)
+    @InjectRepository(UserEntity, DBNameConnections.DEFAULT)
     private userRepository: Repository<UserEntity>,
-    private commandBus: CommandBus,
   ) {}
 
   /**
@@ -34,9 +29,7 @@ export class UserService {
   async findByUsernameOrEmail(
     options: Partial<{ username: string; email: string }>,
   ): Promise<UserEntity | null> {
-    const queryBuilder = this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect<UserEntity, 'user'>('user.settings', 'settings');
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
 
     if (options.email) {
       queryBuilder.orWhere('user.email = :email', {
@@ -59,14 +52,6 @@ export class UserService {
 
     await this.userRepository.save(user);
 
-    user.settings = await this.createSettings(
-      user.id,
-      plainToClass(CreateSettingsDto, {
-        isEmailVerified: false,
-        isPhoneVerified: false,
-      }),
-    );
-
     return user;
   }
 
@@ -79,7 +64,7 @@ export class UserService {
     return items.toPageDto(pageMetaDto);
   }
 
-  async getUser(userId: Uuid): Promise<UserDto> {
+  async getUser(userId: string): Promise<UserDto> {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
 
     queryBuilder.where('user.id = :userId', { userId });
@@ -91,14 +76,5 @@ export class UserService {
     }
 
     return userEntity.toDto();
-  }
-
-  async createSettings(
-    userId: Uuid,
-    createSettingsDto: CreateSettingsDto,
-  ): Promise<UserSettingsEntity> {
-    return this.commandBus.execute<CreateSettingsCommand, UserSettingsEntity>(
-      new CreateSettingsCommand(userId, createSettingsDto),
-    );
   }
 }

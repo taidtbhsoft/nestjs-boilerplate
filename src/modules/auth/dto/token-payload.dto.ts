@@ -1,10 +1,13 @@
-import { NumberField, StringField } from '../../../decorators';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, IsString } from 'class-validator';
 
 export class TokenPayloadDto {
-  @NumberField()
+  @IsNumber()
+  @ApiProperty({ name: 'expiresIn', type: Number, required: true })
   expiresIn: number;
 
-  @StringField()
+  @IsString()
+  @ApiProperty({ name: 'accessToken', type: String, required: true })
   accessToken: string;
 
   constructor(data: { expiresIn: number; accessToken: string }) {

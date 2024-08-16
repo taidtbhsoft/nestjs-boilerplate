@@ -1,5 +1,6 @@
-import { BooleanField, NumberField } from '../../decorators';
+import { IsBoolean, IsNumber } from 'class-validator';
 import type { PageOptionsDto } from './page-options.dto';
+import { ApiProperty } from '@nestjs/swagger';
 
 interface IPageMetaDtoParameters {
   pageOptionsDto: PageOptionsDto;
@@ -7,22 +8,28 @@ interface IPageMetaDtoParameters {
 }
 
 export class PageMetaDto {
-  @NumberField()
+  @IsNumber()
+  @ApiProperty({ name: 'page', type: Number, required: true })
   readonly page: number;
 
-  @NumberField()
+  @IsNumber()
+  @ApiProperty({ name: 'take', type: Number, required: true })
   readonly take: number;
 
-  @NumberField()
+  @IsNumber()
+  @ApiProperty({ name: 'itemCount', type: Number, required: true })
   readonly itemCount: number;
 
-  @NumberField()
+  @IsNumber()
+  @ApiProperty({ name: 'itemCount', type: Number, required: true })
   readonly pageCount: number;
 
-  @BooleanField()
+  @IsBoolean()
+  @ApiProperty({ name: 'hasPreviousPage', type: Boolean, required: true })
   readonly hasPreviousPage: boolean;
 
-  @BooleanField()
+  @IsBoolean()
+  @ApiProperty({ name: 'hasNextPage', type: Boolean, required: true })
   readonly hasNextPage: boolean;
 
   constructor({ pageOptionsDto, itemCount }: IPageMetaDtoParameters) {

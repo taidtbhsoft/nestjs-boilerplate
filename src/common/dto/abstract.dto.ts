@@ -1,22 +1,19 @@
-import {
-  DateField,
-  DYNAMIC_TRANSLATION_DECORATOR_KEY,
-  UUIDField,
-} from '../../decorators';
-import { ContextProvider } from '../../providers';
+import { IsDate, IsString } from 'class-validator';
 import type { AbstractEntity } from '../abstract.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class AbstractDto {
-  @UUIDField()
-  id!: Uuid;
+  @IsString()
+  @ApiProperty({ name: 'id', type: String, required: true })
+  id!: string;
 
-  @DateField()
+  @IsDate()
+  @ApiProperty({ name: 'createdAt', type: Date, required: true })
   createdAt!: Date;
 
-  @DateField()
+  @IsDate()
+  @ApiProperty({ name: 'updatedAt', type: Date, required: true })
   updatedAt!: Date;
-
-  translations?: AbstractTranslationDto[];
 
   constructor(entity: AbstractEntity, options?: { excludeFields?: boolean }) {
     if (!options?.excludeFields) {
@@ -24,38 +21,5 @@ export class AbstractDto {
       this.createdAt = entity.createdAt;
       this.updatedAt = entity.updatedAt;
     }
-
-    const languageCode = ContextProvider.getLanguage();
-
-    if (languageCode && entity.translations) {
-      const translationEntity = entity.translations.find(
-        (titleTranslation) => titleTranslation.languageCode === languageCode,
-      )!;
-
-      const fields: Record<string, string> = {};
-
-      for (const key of Object.keys(translationEntity)) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const metadata = Reflect.getMetadata(
-          DYNAMIC_TRANSLATION_DECORATOR_KEY,
-          this,
-          key,
-        );
-
-        if (metadata) {
-          fields[key] = (translationEntity as never)[key];
-        }
-      }
-
-      Object.assign(this, fields);
-    } else {
-      this.translations = entity.translations?.toDtos();
-    }
-  }
-}
-
-export class AbstractTranslationDto extends AbstractDto {
-  constructor(entity: AbstractEntity) {
-    super(entity, { excludeFields: true });
   }
 }

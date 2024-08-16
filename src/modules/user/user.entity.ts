@@ -1,12 +1,10 @@
-import { Column, Entity, OneToMany, OneToOne, VirtualColumn } from 'typeorm';
+import { Column, Entity, VirtualColumn } from 'typeorm';
 
 import { AbstractEntity } from '../../common/abstract.entity';
-import { RoleType } from '../../constants';
-import { UseDto } from '../../decorators';
-import { PostEntity } from '../post/post.entity';
-import type { UserDtoOptions } from './dtos/user.dto';
-import { UserDto } from './dtos/user.dto';
-import { UserSettingsEntity } from './user-settings.entity';
+import { RoleType } from '../../common/constants';
+import { UseDto } from '../../common/decorators';
+import type { UserDtoOptions } from '../../modules/user/dtos/user.dto';
+import { UserDto } from '../../modules/user/dtos/user.dto';
 
 @Entity({ name: 'users' })
 @UseDto(UserDto)
@@ -37,10 +35,4 @@ export class UserEntity extends AbstractEntity<UserDto, UserDtoOptions> {
       `SELECT CONCAT(${alias}.first_name, ' ', ${alias}.last_name)`,
   })
   fullName!: string;
-
-  @OneToOne(() => UserSettingsEntity, (userSettings) => userSettings.user)
-  settings?: UserSettingsEntity;
-
-  @OneToMany(() => PostEntity, (postEntity) => postEntity.user)
-  posts?: PostEntity[];
 }

@@ -10,20 +10,17 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import compression from 'compression';
 import helmet from 'helmet';
-import morgan from 'morgan';
 import { initializeTransactionalContext } from 'typeorm-transactional';
 
 import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './filters/bad-request.filter';
-import { QueryFailedFilter } from './filters/query-failed.filter';
-import { LoggingInterceptor } from './interceptors/logging.interceptor';
-import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
-import { TranslationInterceptor } from './interceptors/translation-interceptor.service';
-import { LoggerService } from './logger/logger.service';
-import { setupSwagger } from './setup-swagger';
-import { ApiConfigService } from './shared/services/api-config.service';
-import { TranslationService } from './shared/services/translation.service';
-import { SharedModule } from './shared/shared.module';
+import { HttpExceptionFilter } from './common/filters/bad-request.filter';
+import { QueryFailedFilter } from './common/filters/query-failed.filter';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { TimeoutInterceptor } from './common/interceptors/timeout.interceptor';
+import { LoggerService } from './common/logger/logger.service';
+import { setupSwagger } from './common/setup-swagger';
+import { SharedModule } from './common/shared/shared.module';
+import { AppConfigService } from './config/app.config';
 
 export async function bootstrap(): Promise<NestExpressApplication> {
   try {
@@ -37,7 +34,6 @@ export async function bootstrap(): Promise<NestExpressApplication> {
     app.use(helmet());
     // app.setGlobalPrefix('/api'); use api as global prefix if you don't have subdomain
     app.use(compression());
-    app.use(morgan('combined'));
     app.enableVersioning();
     app.setGlobalPrefix('/api/v1');
 
@@ -50,9 +46,6 @@ export async function bootstrap(): Promise<NestExpressApplication> {
 
     app.useGlobalInterceptors(
       new ClassSerializerInterceptor(reflector),
-      new TranslationInterceptor(
-        app.select(SharedModule).get(TranslationService),
-      ),
       new LoggingInterceptor(),
       new TimeoutInterceptor(),
     );
@@ -67,7 +60,7 @@ export async function bootstrap(): Promise<NestExpressApplication> {
       }),
     );
 
-    const configService = app.select(SharedModule).get(ApiConfigService);
+    const configService = app.select(SharedModule).get(AppConfigService);
 
     if (configService.documentationEnabled) {
       setupSwagger(app);

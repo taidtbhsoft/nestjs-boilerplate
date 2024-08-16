@@ -9,8 +9,8 @@ import {
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { RoleType } from '../../constants';
-import { Auth, AuthUser } from '../../decorators';
+import { RoleType } from '../../common/constants';
+import { Auth, AuthUser } from '../../common/decorators';
 import { UserDto } from '../user/dtos/user.dto';
 import { UserEntity } from '../user/user.entity';
 import { UserService } from '../user/user.service';

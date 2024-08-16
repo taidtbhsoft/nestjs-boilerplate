@@ -26,5 +26,5 @@ yarn build:prod
 ```
 ## Run test
 ```bash
-yarn test:e2e
+yarn test
 ```

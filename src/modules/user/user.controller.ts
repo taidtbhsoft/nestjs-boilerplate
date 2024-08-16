@@ -3,16 +3,17 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Query,
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import { RoleType } from '../../common/constants';
+import { ApiPageResponse, Auth, AuthUser } from '../../common/decorators';
 import { PageDto } from '../../common/dto/page.dto';
-import { RoleType } from '../../constants';
-import { ApiPageResponse, Auth, AuthUser, UUIDParam } from '../../decorators';
-import { UseLanguageInterceptor } from '../../interceptors/language-interceptor.service';
-import { TranslationService } from '../../shared/services/translation.service';
+import { UseLanguageInterceptor } from '../../common/interceptors/language-interceptor.service';
+import { TranslationService } from '../../common/shared/services/translation.service';
 import { UserDto } from './dtos/user.dto';
 import { UsersPageOptionsDto } from './dtos/users-page-options.dto';
 import { UserEntity } from './user.entity';
@@ -62,7 +63,7 @@ export class UserController {
     description: 'Get users list',
     type: UserDto,
   })
-  getUser(@UUIDParam('id') userId: Uuid): Promise<UserDto> {
-    return this.userService.getUser(userId);
+  getUser(@Param('id') id: string): Promise<UserDto> {
+    return this.userService.getUser(id);
   }
 }
