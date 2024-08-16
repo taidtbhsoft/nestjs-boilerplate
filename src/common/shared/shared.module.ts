@@ -1,16 +1,11 @@
-import type { Provider } from '@nestjs/common';
-import { Global, Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
+import type {Provider} from '@nestjs/common';
+import {Global, Module} from '@nestjs/common';
+import {CqrsModule} from '@nestjs/cqrs';
 
-import { AppConfigService } from '../../config/app.config';
-import { TranslationService } from '../shared/services/translation.service';
-import { ValidatorService } from '../shared/services/validator.service';
+import {AppConfigService} from '../../config/app.config';
+import {TranslationService} from '../shared/services/translation.service';
 
-const providers: Provider[] = [
-  AppConfigService,
-  ValidatorService,
-  TranslationService,
-];
+const providers: Provider[] = [AppConfigService, TranslationService];
 
 @Global()
 @Module({

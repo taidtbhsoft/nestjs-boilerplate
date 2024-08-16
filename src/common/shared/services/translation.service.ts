@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import type { TranslateOptions } from 'nestjs-i18n';
-import { I18nService } from 'nestjs-i18n';
+import {Injectable} from '@nestjs/common';
+import type {TranslateOptions} from 'nestjs-i18n';
+import {I18nService} from 'nestjs-i18n';
 
-import { ContextProvider } from '../../providers';
+import {ContextProvider} from '../../providers';
 
 @Injectable()
 export class TranslationService {

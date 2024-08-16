@@ -1,26 +1,22 @@
 import {
   ClassSerializerInterceptor,
+  ConsoleLogger,
   HttpStatus,
   Logger,
   UnprocessableEntityException,
   ValidationPipe,
 } from '@nestjs/common';
-import { NestFactory, Reflector } from '@nestjs/core';
-import type { NestExpressApplication } from '@nestjs/platform-express';
-import { ExpressAdapter } from '@nestjs/platform-express';
+import {NestFactory, Reflector} from '@nestjs/core';
+import type {NestExpressApplication} from '@nestjs/platform-express';
+import {ExpressAdapter} from '@nestjs/platform-express';
 import compression from 'compression';
 import helmet from 'helmet';
-import { initializeTransactionalContext } from 'typeorm-transactional';
+import {initializeTransactionalContext} from 'typeorm-transactional';
 
-import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './common/filters/bad-request.filter';
-import { QueryFailedFilter } from './common/filters/query-failed.filter';
-import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
-import { TimeoutInterceptor } from './common/interceptors/timeout.interceptor';
-import { LoggerService } from './common/logger/logger.service';
-import { setupSwagger } from './common/setup-swagger';
-import { SharedModule } from './common/shared/shared.module';
-import { AppConfigService } from './config/app.config';
+import {AppModule} from './app.module';
+import {setupSwagger} from './common/swagger/setup-swagger';
+import {SharedModule} from './common/shared/shared.module';
+import {AppConfigService} from './config/app.config';
 
 export async function bootstrap(): Promise<NestExpressApplication> {
   try {
@@ -28,7 +24,7 @@ export async function bootstrap(): Promise<NestExpressApplication> {
     const app = await NestFactory.create<NestExpressApplication>(
       AppModule,
       new ExpressAdapter(),
-      { cors: true },
+      {cors: true}
     );
     app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
     app.use(helmet());
@@ -39,16 +35,7 @@ export async function bootstrap(): Promise<NestExpressApplication> {
 
     const reflector = app.get(Reflector);
 
-    app.useGlobalFilters(
-      new HttpExceptionFilter(reflector),
-      new QueryFailedFilter(reflector),
-    );
-
-    app.useGlobalInterceptors(
-      new ClassSerializerInterceptor(reflector),
-      new LoggingInterceptor(),
-      new TimeoutInterceptor(),
-    );
+    app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
 
     app.useGlobalPipes(
       new ValidationPipe({
@@ -56,8 +43,8 @@ export async function bootstrap(): Promise<NestExpressApplication> {
         errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
         transform: true,
         dismissDefaultMessages: true,
-        exceptionFactory: (errors) => new UnprocessableEntityException(errors),
-      }),
+        exceptionFactory: errors => new UnprocessableEntityException(errors),
+      })
     );
 
     const configService = app.select(SharedModule).get(AppConfigService);
@@ -71,7 +58,7 @@ export async function bootstrap(): Promise<NestExpressApplication> {
       app.enableShutdownHooks();
     }
 
-    app.useLogger(new LoggerService());
+    app.useLogger(new ConsoleLogger());
 
     const port = configService.appConfig.port;
     await app.listen(port);

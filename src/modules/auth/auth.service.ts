@@ -1,9 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import type { RoleType } from '../../common/constants';
 import { TokenType } from '../../common/constants';
-import { UserNotFoundException } from '../../common/exceptions';
 import { validateHash } from '../../common/utils';
 import { AppConfigService } from '../../config/app.config';
 import { UserEntity } from '../user/user.entity';
@@ -44,7 +43,7 @@ export class AuthService {
     );
 
     if (!isPasswordValid) {
-      throw new UserNotFoundException();
+      throw new NotFoundException('error.userNotFound');
     }
 
     return user!;

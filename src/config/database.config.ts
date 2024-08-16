@@ -33,10 +33,8 @@ export const postgresOptions: TypeOrmModuleOptions = {
 };
 
 export const postgresDefault = (): TypeOrmModuleOptions => {
-  const entities = [
-    UserEntity
-  ];
-//   const migrations = [__dirname + '/../../database/default/migrations/*{.ts,.js}'];
+  const entities = [UserEntity];
+  //   const migrations = [__dirname + '/../../database/default/migrations/*{.ts,.js}'];
 
   return {
     ...postgresOptions,

@@ -1,22 +1,25 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import type { FindOptionsWhere } from 'typeorm';
-import { Repository } from 'typeorm';
-import { Transactional } from 'typeorm-transactional';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import type {FindOptionsWhere} from 'typeorm';
+import {Repository} from 'typeorm';
+import {Transactional} from 'typeorm-transactional';
 
-import type { PageDto } from '../../common/dto/page.dto';
-import { UserNotFoundException } from '../../common/exceptions';
-import { UserRegisterDto } from '../auth/dto/user-register.dto';
-import type { UserDto } from './dtos/user.dto';
-import type { UsersPageOptionsDto } from './dtos/users-page-options.dto';
-import { UserEntity } from './user.entity';
-import { DBNameConnections } from '../../common/constants/db-name';
+import type {PageDto} from '../../common/dto/page.dto';
+import {UserRegisterDto} from '../auth/dto/user-register.dto';
+import type {UserDto} from './dtos/user.dto';
+import type {UsersPageOptionsDto} from './dtos/users-page-options.dto';
+import {UserEntity} from './user.entity';
+import {DBNameConnections} from '../../common/constants/db-name';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity, DBNameConnections.DEFAULT)
-    private userRepository: Repository<UserEntity>,
+    private userRepository: Repository<UserEntity>
   ) {}
 
   /**
@@ -27,7 +30,7 @@ export class UserService {
   }
 
   async findByUsernameOrEmail(
-    options: Partial<{ username: string; email: string }>,
+    options: Partial<{username: string; email: string}>
   ): Promise<UserEntity | null> {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
 
@@ -48,6 +51,17 @@ export class UserService {
 
   @Transactional()
   async createUser(userRegisterDto: UserRegisterDto): Promise<UserEntity> {
+    // Check duplicate email
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
+
+    queryBuilder.where('user.email = :email', {email: userRegisterDto.email});
+
+    const userEntity = await queryBuilder.getOne();
+
+    if (userEntity) {
+      throw new BadRequestException('error.unique.email');
+    }
+
     const user = this.userRepository.create(userRegisterDto);
 
     await this.userRepository.save(user);
@@ -56,7 +70,7 @@ export class UserService {
   }
 
   async getUsers(
-    pageOptionsDto: UsersPageOptionsDto,
+    pageOptionsDto: UsersPageOptionsDto
   ): Promise<PageDto<UserDto>> {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
     const [items, pageMetaDto] = await queryBuilder.paginate(pageOptionsDto);
@@ -65,16 +79,19 @@ export class UserService {
   }
 
   async getUser(userId: string): Promise<UserDto> {
-    const queryBuilder = this.userRepository.createQueryBuilder('user');
+    try {
+      const queryBuilder = this.userRepository.createQueryBuilder('user');
 
-    queryBuilder.where('user.id = :userId', { userId });
+      queryBuilder.where('user.id = :userId', {userId});
 
-    const userEntity = await queryBuilder.getOne();
+      const userEntity = await queryBuilder.getOne();
 
-    if (!userEntity) {
-      throw new UserNotFoundException();
+      if (!userEntity) {
+        throw new NotFoundException('error.userNotFound');
+      }
+      return userEntity.toDto();
+    } catch (error) {
+      throw new NotFoundException('error.userNotFound');
     }
-
-    return userEntity.toDto();
   }
 }

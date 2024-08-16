@@ -1,19 +1,19 @@
 import 'source-map-support/register';
 
-import { compact, map } from 'lodash';
-import type { ObjectLiteral } from 'typeorm';
-import { Brackets, SelectQueryBuilder } from 'typeorm';
+import {compact, map} from 'lodash';
+import type {ObjectLiteral} from 'typeorm';
+import {Brackets, SelectQueryBuilder} from 'typeorm';
 
-import type { AbstractEntity } from './abstract.entity';
-import type { AbstractDto } from './dto/abstract.dto';
-import { PageDto } from './dto/page.dto';
-import { PageMetaDto } from './dto/page-meta.dto';
-import type { PageOptionsDto } from './dto/page-options.dto';
-import type { KeyOfType } from './types';
+import type {AbstractEntity} from './abstract.entity';
+import type {AbstractDto} from './dto/abstract.dto';
+import {PageDto} from './dto/page.dto';
+import {PageMetaDto} from './dto/page-meta.dto';
+import type {PageOptionsDto} from './dto/page-options.dto';
+import type {KeyOfType} from './types';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-redundant-type-constituents
-  export type Todo = any & { _todoBrand: undefined };
+  export type Todo = any & {_todoBrand: undefined};
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   interface Array<T> {
@@ -23,7 +23,7 @@ declare global {
       this: T[],
       pageMetaDto: PageMetaDto,
       // FIXME make option type visible from entity
-      options?: unknown,
+      options?: unknown
     ): PageDto<Dto>;
   }
 }
@@ -36,13 +36,13 @@ declare module 'typeorm' {
       columnNames: string[],
       options?: {
         formStart: boolean;
-      },
+      }
     ): this;
 
     paginate(
       this: SelectQueryBuilder<Entity>,
       pageOptionsDto: PageOptionsDto,
-      options?: Partial<{ takeAll: boolean; skipCount: boolean }>,
+      options?: Partial<{takeAll: boolean; skipCount: boolean}>
     ): Promise<[Entity[], PageMetaDto]>;
 
     leftJoinAndSelect<AliasEntity extends AbstractEntity, A extends string>(
@@ -53,7 +53,7 @@ declare module 'typeorm' {
       >}`,
       alias: string,
       condition?: string,
-      parameters?: ObjectLiteral,
+      parameters?: ObjectLiteral
     ): this;
 
     leftJoin<AliasEntity extends AbstractEntity, A extends string>(
@@ -64,7 +64,7 @@ declare module 'typeorm' {
       >}`,
       alias: string,
       condition?: string,
-      parameters?: ObjectLiteral,
+      parameters?: ObjectLiteral
     ): this;
 
     innerJoinAndSelect<AliasEntity extends AbstractEntity, A extends string>(
@@ -75,7 +75,7 @@ declare module 'typeorm' {
       >}`,
       alias: string,
       condition?: string,
-      parameters?: ObjectLiteral,
+      parameters?: ObjectLiteral
     ): this;
 
     innerJoin<AliasEntity extends AbstractEntity, A extends string>(
@@ -86,7 +86,7 @@ declare module 'typeorm' {
       >}`,
       alias: string,
       condition?: string,
-      parameters?: ObjectLiteral,
+      parameters?: ObjectLiteral
     ): this;
   }
 }
@@ -96,13 +96,13 @@ Array.prototype.toDtos = function <
   Dto extends AbstractDto,
 >(options?: unknown): Dto[] {
   return compact(
-    map<Entity, Dto>(this as Entity[], (item) => item.toDto(options as never)),
+    map<Entity, Dto>(this as Entity[], item => item.toDto(options as never))
   );
 };
 
 Array.prototype.toPageDto = function (
   pageMetaDto: PageMetaDto,
-  options?: unknown,
+  options?: unknown
 ) {
   return new PageDto(this.toDtos(options), pageMetaDto);
 };
@@ -110,18 +110,18 @@ Array.prototype.toPageDto = function (
 SelectQueryBuilder.prototype.searchByString = function (
   q,
   columnNames,
-  options,
+  options
 ) {
   if (!q) {
     return this;
   }
 
   this.andWhere(
-    new Brackets((qb) => {
+    new Brackets(qb => {
       for (const item of columnNames) {
         qb.orWhere(`${item} ILIKE :q`);
       }
-    }),
+    })
   );
 
   if (options?.formStart) {
@@ -138,7 +138,7 @@ SelectQueryBuilder.prototype.paginate = async function (
   options?: Partial<{
     skipCount: boolean;
     takeAll: boolean;
-  }>,
+  }>
 ) {
   if (!options?.takeAll) {
     this.skip(pageOptionsDto.skip).take(pageOptionsDto.take);
