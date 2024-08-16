@@ -1,21 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import {Injectable, NotFoundException} from '@nestjs/common';
+import {JwtService} from '@nestjs/jwt';
 
-import type { RoleType } from '../../common/constants';
-import { TokenType } from '../../common/constants';
-import { validateHash } from '../../common/utils';
-import { AppConfigService } from '../../config/app.config';
-import { UserEntity } from '../user/user.entity';
-import { UserService } from '../user/user.service';
-import { TokenPayloadDto } from './dto/token-payload.dto';
-import type { UserLoginDto } from './dto/user-login.dto';
+import type {RoleType} from '@constants';
+import {TokenType} from '@constants';
+import {validateHash} from '@common/utils';
+import {AppConfigService} from '@config/app.config';
+import {UserEntity} from '@modules/user/user.entity';
+import {UserService} from '@modules/user/user.service';
+import {TokenPayloadDto} from './dto/token-payload.dto';
+import type {UserLoginDto} from './dto/user-login.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
     private configService: AppConfigService,
-    private userService: UserService,
+    private userService: UserService
   ) {}
 
   async createAccessToken(data: {
@@ -39,7 +39,7 @@ export class AuthService {
 
     const isPasswordValid = await validateHash(
       userLoginDto.password,
-      user?.password,
+      user?.password
     );
 
     if (!isPasswordValid) {

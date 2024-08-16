@@ -1,9 +1,9 @@
-import type { Type } from '@nestjs/common';
-import { applyDecorators } from '@nestjs/common';
-import type { ApiResponseOptions } from '@nestjs/swagger';
-import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
+import type {Type} from '@nestjs/common';
+import {applyDecorators} from '@nestjs/common';
+import type {ApiResponseOptions} from '@nestjs/swagger';
+import {ApiExtraModels, ApiOkResponse, getSchemaPath} from '@nestjs/swagger';
 
-import { PageDto } from '../dto/page.dto';
+import {PageDto} from '../dto/page.dto';
 
 export function ApiPageResponse<T extends Type>(options: {
   type: T;
@@ -16,17 +16,17 @@ export function ApiPageResponse<T extends Type>(options: {
       description: options.description,
       schema: {
         allOf: [
-          { $ref: getSchemaPath(PageDto) },
+          {$ref: getSchemaPath(PageDto)},
           {
             properties: {
               results: {
                 type: 'array',
-                items: { $ref: getSchemaPath(options.type) },
+                items: {$ref: getSchemaPath(options.type)},
               },
             },
           },
         ],
       },
-    } as ApiResponseOptions | undefined),
+    } as ApiResponseOptions | undefined)
   );
 }

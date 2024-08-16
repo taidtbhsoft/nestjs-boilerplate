@@ -1,10 +1,9 @@
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import { addTransactionalDataSource } from 'typeorm-transactional';
+import {TypeOrmModule, TypeOrmModuleOptions} from '@nestjs/typeorm';
+import {DataSource} from 'typeorm';
+import {addTransactionalDataSource} from 'typeorm-transactional';
 
-import { SnakeNamingStrategy } from '../common/snake-naming.strategy';
-import { UserEntity } from '../modules/user/user.entity';
-import { UserSubscriber } from '../modules/user/user-subscriber';
+import {UserEntity} from '@modules/user/user.entity';
+import {UserSubscriber} from '@modules/user/user-subscriber';
 import {
   DB_DATABASE,
   DB_HOST,
@@ -14,7 +13,7 @@ import {
   ENABLE_ORM_LOGS,
   NODE_ENV,
 } from './env.config';
-import { DBNameConnections } from '../common/constants/db-name';
+import {DBNameConnections} from '@/common/constants/db-name';
 
 const isTest = NODE_ENV === 'test';
 
@@ -26,7 +25,6 @@ export const postgresOptions: TypeOrmModuleOptions = {
   password: DB_PASSWORD,
   migrationsRun: true,
   logging: ENABLE_ORM_LOGS,
-  namingStrategy: new SnakeNamingStrategy(),
   synchronize: true,
   keepConnectionAlive: !isTest,
   dropSchema: isTest,
@@ -49,13 +47,13 @@ export const postgresDefault = (): TypeOrmModuleOptions => {
 export const initDBModules = [
   TypeOrmModule.forRootAsync({
     useFactory: postgresDefault,
-    dataSourceFactory: (options) => {
+    dataSourceFactory: options => {
       if (!options) {
         throw new Error('Invalid options passed');
       }
 
       return Promise.resolve(
-        addTransactionalDataSource(new DataSource(options)),
+        addTransactionalDataSource(new DataSource(options))
       );
     },
   }),

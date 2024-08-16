@@ -9,7 +9,15 @@
         "ES2021.String"
     ],
     "emitDecoratorMetadata": true ,
-    "skipLibCheck":true
+    "skipLibCheck":true,
+    "paths": {
+        "@/*": ["./src/*"],
+        "@common/*": ["./src/common/*"],
+        "@modules/*": ["./src/modules/*"],
+        "@config/*": ["./src/config/*"],
+        "@constants/*": ["./src/common/constants/*"],
+        "@constants": ["./src/common/constants"],
+      }
   },
   "include": [
     "src/**/*.ts",

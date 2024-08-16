@@ -1,31 +1,27 @@
-import './common/boilerplate.polyfill';
+import '@common/boilerplate.polyfill';
 
 import path from 'node:path';
 
-import {
-  CacheInterceptor,
-  CacheModule,
-  CacheStore,
-} from '@nestjs/cache-manager';
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { ScheduleModule } from '@nestjs/schedule';
-import { ThrottlerModule } from '@nestjs/throttler';
+import {CacheInterceptor, CacheModule, CacheStore} from '@nestjs/cache-manager';
+import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
+import {ConfigModule} from '@nestjs/config';
+import {APP_INTERCEPTOR} from '@nestjs/core';
+import {ScheduleModule} from '@nestjs/schedule';
+import {ThrottlerModule} from '@nestjs/throttler';
 import * as redisStore from 'cache-manager-redis-store';
-import { ClsModule } from 'nestjs-cls';
+import {ClsModule} from 'nestjs-cls';
 import {
   AcceptLanguageResolver,
   HeaderResolver,
   I18nModule,
   QueryResolver,
 } from 'nestjs-i18n';
-import { LoggerMiddleware } from './common/shared/middleware/logger.middleware';
-import { SharedModule } from './common/shared/shared.module';
-import { AppConfigService } from './config/app.config';
-import { initDBModules } from './config/database.config';
-import { AuthModule } from './modules/auth/auth.module';
-import { UserModule } from './modules/user/user.module';
+import {LoggerMiddleware} from '@common/shared/middleware/logger.middleware';
+import {SharedModule} from '@common/shared/shared.module';
+import {AppConfigService} from '@config/app.config';
+import {initDBModules} from '@config/database.config';
+import {AuthModule} from '@modules/auth/auth.module';
+import {UserModule} from '@modules/user/user.module';
 
 @Module({
   imports: [
@@ -58,7 +54,7 @@ import { UserModule } from './modules/user/user.module';
         },
       }),
       resolvers: [
-        { use: QueryResolver, options: ['lang'] },
+        {use: QueryResolver, options: ['lang']},
         AcceptLanguageResolver,
         new HeaderResolver(['x-lang']),
       ],

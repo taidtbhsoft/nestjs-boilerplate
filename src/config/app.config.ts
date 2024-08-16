@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import type { ThrottlerOptions } from '@nestjs/throttler';
-import { isNil } from 'lodash';
+import {Injectable} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
+import type {ThrottlerOptions} from '@nestjs/throttler';
+import {isNil} from 'lodash';
 
 @Injectable()
 export class AppConfigService {

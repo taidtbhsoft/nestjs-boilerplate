@@ -4,8 +4,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import type { AbstractDto } from './dto/abstract.dto';
-import type { Constructor } from './types';
+import type {AbstractDto} from './dto/abstract.dto';
+import type {Constructor} from './types';
 
 /**
  * Abstract Entity
@@ -38,7 +38,7 @@ export abstract class AbstractEntity<
 
     if (!dtoClass) {
       throw new Error(
-        `You need to use @UseDto on class (${this.constructor.name}) be able to call toDto function`,
+        `You need to use @UseDto on class (${this.constructor.name}) be able to call toDto function`
       );
     }
 

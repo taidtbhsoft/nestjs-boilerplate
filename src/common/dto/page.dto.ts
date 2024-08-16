@@ -1,12 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
+import {ApiProperty} from '@nestjs/swagger';
 
-import { PageMetaDto } from './page-meta.dto';
+import {PageMetaDto} from './page-meta.dto';
 
 export class PageDto<T> {
-  @ApiProperty({ isArray: true })
+  @ApiProperty({isArray: true})
   readonly data: T[];
 
-  @ApiProperty({ name: 'token', type: PageMetaDto, required: true })
+  @ApiProperty({name: 'token', type: PageMetaDto, required: true})
   readonly meta: PageMetaDto;
 
   constructor(data: T[], meta: PageMetaDto) {

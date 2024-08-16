@@ -17,7 +17,7 @@ export function generateHash(password: string): string {
  */
 export function validateHash(
   password: string | undefined,
-  hash: string | undefined | null,
+  hash: string | undefined | null
 ): Promise<boolean> {
   if (!password || !hash) {
     return Promise.resolve(false);
@@ -27,15 +27,15 @@ export function validateHash(
 }
 
 export function getVariableName<TResult>(
-  getVar: () => TResult,
+  getVar: () => TResult
 ): string | undefined {
   const m = /\(\)=>(.*)/.exec(
-    getVar.toString().replaceAll(/(\r\n|\n|\r|\s)/gm, ''),
+    getVar.toString().replaceAll(/(\r\n|\n|\r|\s)/gm, '')
   );
 
   if (!m) {
     throw new Error(
-      "The function does not contain a statement matching 'return variableName;'",
+      "The function does not contain a statement matching 'return variableName;'"
     );
   }
 

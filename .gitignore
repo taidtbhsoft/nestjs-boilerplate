@@ -86,5 +86,5 @@ db-data
 # Local History
 .history
 
-.husky/
 build/
+.vscode

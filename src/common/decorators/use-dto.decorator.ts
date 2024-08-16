@@ -1,7 +1,7 @@
-import type { Constructor } from '../types';
+import type {Constructor} from '../types';
 
 export function UseDto(dtoClass: Constructor): ClassDecorator {
-  return (ctor) => {
+  return ctor => {
     // FIXME make dtoClass function returning dto
 
     if (!(dtoClass as unknown)) {

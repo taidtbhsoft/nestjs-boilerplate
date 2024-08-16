@@ -7,23 +7,23 @@ import {
   Query,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import {ApiResponse, ApiTags} from '@nestjs/swagger';
 
-import { RoleType } from '../../common/constants';
-import { ApiPageResponse, Auth, AuthUser } from '../../common/decorators';
-import { PageDto } from '../../common/dto/page.dto';
-import { TranslationService } from '../../common/shared/services/translation.service';
-import { UserDto } from './dtos/user.dto';
-import { UsersPageOptionsDto } from './dtos/users-page-options.dto';
-import { UserEntity } from './user.entity';
-import { UserService } from './user.service';
+import {RoleType} from '@constants';
+import {ApiPageResponse, Auth, AuthUser} from '@common/decorators';
+import {PageDto} from '@common/dto/page.dto';
+import {TranslationService} from '@common/shared/services/translation.service';
+import {UserDto} from './dtos/user.dto';
+import {UsersPageOptionsDto} from './dtos/users-page-options.dto';
+import {UserEntity} from './user.entity';
+import {UserService} from './user.service';
 
 @Controller('users')
 @ApiTags('users')
 export class UserController {
   constructor(
     private userService: UserService,
-    private readonly translationService: TranslationService,
+    private readonly translationService: TranslationService
   ) {}
 
   @Get('admin')
@@ -31,7 +31,7 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   async admin(@AuthUser() user: UserEntity) {
     const translation = await this.translationService.translate(
-      'admin.keywords.admin',
+      'admin.keywords.admin'
     );
 
     return {
@@ -47,8 +47,8 @@ export class UserController {
     type: PageDto,
   })
   getUsers(
-    @Query(new ValidationPipe({ transform: true }))
-    pageOptionsDto: UsersPageOptionsDto,
+    @Query(new ValidationPipe({transform: true}))
+    pageOptionsDto: UsersPageOptionsDto
   ): Promise<PageDto<UserDto>> {
     return this.userService.getUsers(pageOptionsDto);
   }

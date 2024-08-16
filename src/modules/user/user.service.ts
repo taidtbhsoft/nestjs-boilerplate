@@ -8,12 +8,12 @@ import type {FindOptionsWhere} from 'typeorm';
 import {Repository} from 'typeorm';
 import {Transactional} from 'typeorm-transactional';
 
-import type {PageDto} from '../../common/dto/page.dto';
-import {UserRegisterDto} from '../auth/dto/user-register.dto';
+import type {PageDto} from '@common/dto/page.dto';
+import {UserRegisterDto} from '@modules/auth/dto/user-register.dto';
 import type {UserDto} from './dtos/user.dto';
 import type {UsersPageOptionsDto} from './dtos/users-page-options.dto';
 import {UserEntity} from './user.entity';
-import {DBNameConnections} from '../../common/constants/db-name';
+import {DBNameConnections} from '@constants/db-name';
 
 @Injectable()
 export class UserService {

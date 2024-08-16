@@ -13,10 +13,10 @@ import compression from 'compression';
 import helmet from 'helmet';
 import {initializeTransactionalContext} from 'typeorm-transactional';
 
-import {AppModule} from './app.module';
-import {setupSwagger} from './common/swagger/setup-swagger';
-import {SharedModule} from './common/shared/shared.module';
-import {AppConfigService} from './config/app.config';
+import {AppModule} from '@/app.module';
+import {setupSwagger} from '@common/swagger/setup-swagger';
+import {SharedModule} from '@common/shared/shared.module';
+import {AppConfigService} from '@config/app.config';
 
 export async function bootstrap(): Promise<NestExpressApplication> {
   try {

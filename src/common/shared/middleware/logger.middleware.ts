@@ -1,5 +1,5 @@
-import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
-import { NextFunction, Request, Response } from 'express';
+import {Injectable, Logger, NestMiddleware} from '@nestjs/common';
+import {NextFunction, Request, Response} from 'express';
 // eslint-disable-next-line n/no-extraneous-import
 import chalk from 'chalk';
 @Injectable()
