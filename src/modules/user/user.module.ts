@@ -2,7 +2,7 @@ import {Module} from '@nestjs/common';
 import {TypeOrmModule} from '@nestjs/typeorm';
 
 import {UserController} from './user.controller';
-import {UserEntity} from './user.entity';
+import {UserEntity} from '@common/entities/user.entity';
 import {UserService} from './user.service';
 import {DBNameConnections} from '@constants/db-name';
 

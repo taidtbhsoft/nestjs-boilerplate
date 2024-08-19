@@ -1,6 +1,6 @@
 import {Column, Entity, VirtualColumn} from 'typeorm';
 
-import {AbstractEntity} from '@common/abstract.entity';
+import {AbstractEntity} from './abstract.entity';
 import {RoleType} from '@constants';
 import {UseDto} from '@common/decorators';
 import type {UserDtoOptions} from '@modules/user/dtos/user.dto';

@@ -1,7 +1,7 @@
 import {setSeederFactory} from 'typeorm-extension';
 
 import {RoleType} from '@constants';
-import {UserEntity} from '@modules/user/user.entity';
+import {UserEntity} from '@common/entities/user.entity';
 
 export default setSeederFactory(UserEntity, faker => {
   const firstName = faker.person.firstName();

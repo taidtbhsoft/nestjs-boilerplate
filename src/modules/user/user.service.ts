@@ -12,7 +12,7 @@ import type {PageDto} from '@common/dto/page.dto';
 import {UserRegisterDto} from '@modules/auth/dto/user-register.dto';
 import type {UserDto} from './dtos/user.dto';
 import type {UsersPageOptionsDto} from './dtos/users-page-options.dto';
-import {UserEntity} from './user.entity';
+import {UserEntity} from '@common/entities/user.entity';
 import {DBNameConnections} from '@constants/db-name';
 
 @Injectable()

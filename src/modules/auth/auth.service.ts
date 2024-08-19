@@ -5,7 +5,7 @@ import type {RoleType} from '@constants';
 import {TokenType} from '@constants';
 import {validateHash} from '@common/utils';
 import {AppConfigService} from '@config/app.config';
-import {UserEntity} from '@modules/user/user.entity';
+import {UserEntity} from '@common/entities/user.entity';
 import {UserService} from '@modules/user/user.service';
 import {TokenPayloadDto} from './dto/token-payload.dto';
 import type {UserLoginDto} from './dto/user-login.dto';

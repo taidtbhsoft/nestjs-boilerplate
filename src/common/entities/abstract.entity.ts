@@ -4,8 +4,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import type {AbstractDto} from './dto/abstract.dto';
-import type {Constructor} from './types';
+import type {AbstractDto} from '../dto/abstract.dto';
+import type {Constructor} from '../types';
 
 /**
  * Abstract Entity

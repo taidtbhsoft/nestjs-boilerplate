@@ -1,7 +1,7 @@
 import type {CanActivate, ExecutionContext} from '@nestjs/common';
 import {Injectable} from '@nestjs/common';
 
-import {UserEntity} from '@modules/user/user.entity';
+import {UserEntity} from '@common/entities/user.entity';
 import {LanguageCode, RoleType} from '@constants';
 import {ContextProvider} from '../providers';
 

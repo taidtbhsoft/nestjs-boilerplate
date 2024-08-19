@@ -1,6 +1,6 @@
 import {ClsServiceManager} from 'nestjs-cls';
 
-import {UserEntity} from '@modules/user/user.entity';
+import {UserEntity} from '@common/entities/user.entity';
 import type {LanguageCode} from '@constants/index';
 
 export class ContextProvider {

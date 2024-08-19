@@ -1,4 +1,4 @@
-import {UserEntity} from '@/modules/user/user.entity';
+import {UserEntity} from '@common/entities/user.entity';
 import {DataSource} from 'typeorm';
 import {Seeder, SeederFactoryManager} from 'typeorm-extension';
 

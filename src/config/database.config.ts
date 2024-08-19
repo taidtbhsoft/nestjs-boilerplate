@@ -2,7 +2,7 @@ import {TypeOrmModule, TypeOrmModuleOptions} from '@nestjs/typeorm';
 import {DataSource} from 'typeorm';
 import {addTransactionalDataSource} from 'typeorm-transactional';
 
-import {UserEntity} from '@modules/user/user.entity';
+import {UserEntity} from '@common/entities/user.entity';
 import {UserSubscriber} from '@modules/user/user-subscriber';
 import {
   DB_DATABASE,

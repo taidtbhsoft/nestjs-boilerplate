@@ -12,7 +12,7 @@ import {ApiOkResponse, ApiTags} from '@nestjs/swagger';
 import {RoleType} from '@constants';
 import {Auth, AuthUser} from '@common/decorators';
 import {UserDto} from '@modules/user/dtos/user.dto';
-import {UserEntity} from '@modules/user/user.entity';
+import {UserEntity} from '@common/entities/user.entity';
 import {UserService} from '@modules/user/user.service';
 import {AuthService} from './auth.service';
 import {LoginPayloadDto} from './dto/login-payload.dto';

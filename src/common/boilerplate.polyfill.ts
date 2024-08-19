@@ -4,7 +4,7 @@ import {compact, map} from 'lodash';
 import type {ObjectLiteral} from 'typeorm';
 import {Brackets, SelectQueryBuilder} from 'typeorm';
 
-import type {AbstractEntity} from './abstract.entity';
+import type {AbstractEntity} from './entities/abstract.entity';
 import type {AbstractDto} from './dto/abstract.dto';
 import {PageDto} from './dto/page.dto';
 import {PageMetaDto} from './dto/page-meta.dto';

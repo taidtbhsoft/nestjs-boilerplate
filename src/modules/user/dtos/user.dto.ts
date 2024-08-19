@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import {RoleType} from '@constants';
 import {AbstractDto} from '@common/dto/abstract.dto';
-import {UserEntity} from '../user.entity';
+import {UserEntity} from '@common/entities/user.entity';
 
 // TODO, remove this class and use constructor's second argument's type
 export type UserDtoOptions = Partial<{isActive: boolean}>;

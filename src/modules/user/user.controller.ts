@@ -15,7 +15,7 @@ import {PageDto} from '@common/dto/page.dto';
 import {TranslationService} from '@common/shared/services/translation.service';
 import {UserDto} from './dtos/user.dto';
 import {UsersPageOptionsDto} from './dtos/users-page-options.dto';
-import {UserEntity} from './user.entity';
+import {UserEntity} from '@common/entities/user.entity';
 import {UserService} from './user.service';
 
 @Controller('users')

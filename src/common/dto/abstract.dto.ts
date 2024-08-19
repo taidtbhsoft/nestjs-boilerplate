@@ -1,5 +1,5 @@
 import {IsDate, IsString} from 'class-validator';
-import type {AbstractEntity} from '../abstract.entity';
+import type {AbstractEntity} from '../entities/abstract.entity';
 import {ApiProperty} from '@nestjs/swagger';
 
 export class AbstractDto {
