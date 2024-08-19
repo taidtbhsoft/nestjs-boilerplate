@@ -83,4 +83,11 @@ yarn seed:run <path data dataSource> --name <path seed file>
 yarn seed:run  -d src/database/default/ormconfig.ts --name src/database/default/seeds/1724034017576-user.ts
 ```
 
-
+## Kafka run local
+```bash
+docker-compose -f kafka.yml up -d
+```
+- Kafka UI
+```bash
+http://localhost:19000/
+```

@@ -54,6 +54,7 @@
     "express": "^4.18.2",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
+    "kafkajs": "^2.2.4",
     "lodash": "^4.17.21",
     "nestjs-cls": "^3.6.0",
     "nestjs-i18n": "^10.4.0",

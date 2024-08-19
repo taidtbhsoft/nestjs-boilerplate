@@ -17,6 +17,8 @@ import {AppModule} from '@/app.module';
 import {setupSwagger} from '@common/swagger/setup-swagger';
 import {SharedModule} from '@common/shared/shared.module';
 import {AppConfigService} from '@config/app.config';
+import {MicroserviceOptions, Transport} from '@nestjs/microservices';
+import {KAFKA_BROKER, KAFKA_GROUP_ID} from '@config/env.config';
 
 export async function bootstrap(): Promise<NestExpressApplication> {
   try {
@@ -26,6 +28,18 @@ export async function bootstrap(): Promise<NestExpressApplication> {
       new ExpressAdapter(),
       {cors: true}
     );
+    KAFKA_BROKER &&
+      app.connectMicroservice<MicroserviceOptions>({
+        transport: Transport.KAFKA,
+        options: {
+          client: {
+            brokers: [KAFKA_BROKER],
+          },
+          consumer: {
+            groupId: KAFKA_GROUP_ID,
+          },
+        },
+      });
     app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
     app.use(helmet());
     // app.setGlobalPrefix('/api'); use api as global prefix if you don't have subdomain
@@ -59,7 +73,7 @@ export async function bootstrap(): Promise<NestExpressApplication> {
     }
 
     app.useLogger(new ConsoleLogger());
-
+    await app.startAllMicroservices();
     const port = configService.appConfig.port;
     await app.listen(port);
 
