@@ -25,19 +25,20 @@ export const postgresOptions: TypeOrmModuleOptions = {
   password: DB_PASSWORD,
   migrationsRun: true,
   logging: ENABLE_ORM_LOGS,
-  synchronize: true,
+  synchronize: false, // can be false in production
   keepConnectionAlive: !isTest,
   dropSchema: isTest,
 };
 
 export const postgresDefault = (): TypeOrmModuleOptions => {
   const entities = [UserEntity];
-  //   const migrations = [__dirname + '/../../database/default/migrations/*{.ts,.js}'];
-
+  const migrations = [
+    `src/database/${DBNameConnections.DEFAULT}/migrations/*{.ts,.js}`,
+  ];
   return {
     ...postgresOptions,
     name: DBNameConnections.DEFAULT,
-    // migrations,
+    migrations,
     entities,
     database: DB_DATABASE,
     subscribers: [UserSubscriber],

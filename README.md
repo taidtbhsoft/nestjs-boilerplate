@@ -28,3 +28,32 @@ yarn build:prod
 ```bash
 yarn test
 ```
+
+## Migration
+```bash
+yarn typeorm migration:generate -d <path your DataSource instance> <Path of the migration file><The migration file name>
+```
+# Example
+```bash
+yarn typeorm migration:generate -d src/database/default/ormconfig.ts src/database/default/migrations/intdb
+```
+# Run Migration 
+```bash
+yarn typeorm migration:run -d <path your DataSource instance>
+```
+# Example
+```bash
+yarn typeorm migration:run -d src/database/default/ormconfig.ts
+```
+# Migration Revert 
+```bash
+yarn typeorm migration:revert -d src/database/default/ormconfig.ts
+```
+# Schema Sync
+```bash
+yarn typeorm schema:sync -d src/database/default/ormconfig.ts
+```
+# Schema Drop
+```bash
+yarn typeorm schema:drop -d src/database/default/ormconfig.ts
+```
