@@ -57,3 +57,30 @@ yarn typeorm schema:sync -d src/database/default/ormconfig.ts
 ```bash
 yarn typeorm schema:drop -d src/database/default/ormconfig.ts
 ```
+
+## Seed create
+```bash
+yarn seed:create <path seed file>
+```
+# Example
+```bash
+yarn seed:create src/database/default/seeds/user
+```
+## Seed run
+```bash
+yarn seed:run <path data dataSource>
+```
+# Example
+```bash
+yarn seed:run  -d src/database/default/ormconfig.ts
+```
+## Seed run specific file
+```bash
+yarn seed:run <path data dataSource> --name <path seed file>
+```
+# Example
+```bash
+yarn seed:run  -d src/database/default/ormconfig.ts --name src/database/default/seeds/1724034017576-user.ts
+```
+
+

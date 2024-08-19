@@ -23,18 +23,27 @@ export const postgresOptions: TypeOrmModuleOptions = {
   port: DB_PORT,
   username: DB_USERNAME,
   password: DB_PASSWORD,
-  migrationsRun: true,
+  migrationsRun: true, //Auto run migrations when init connect db
   logging: ENABLE_ORM_LOGS,
   synchronize: false, // can be false in production
   keepConnectionAlive: !isTest,
   dropSchema: isTest,
 };
 
-export const postgresDefault = (): TypeOrmModuleOptions => {
+export const postgresDefault = (): TypeOrmModuleOptions & {
+  seeds: string[];
+  factories: string[];
+} => {
   const entities = [UserEntity];
   const migrations = [
     `src/database/${DBNameConnections.DEFAULT}/migrations/*{.ts,.js}`,
   ];
+  const seeds = [`src/database/${DBNameConnections.DEFAULT}/seeds/*{.ts,.js}`];
+  const factories = [
+    `src/database/${DBNameConnections.DEFAULT}/factories/*{.ts,.js}`,
+  ];
+  // Can auto run seeder when init connect connect db
+  // https://typeorm-extension.tada5hi.net/guide/seeding.html#execute
   return {
     ...postgresOptions,
     name: DBNameConnections.DEFAULT,
@@ -42,6 +51,8 @@ export const postgresDefault = (): TypeOrmModuleOptions => {
     entities,
     database: DB_DATABASE,
     subscribers: [UserSubscriber],
+    seeds,
+    factories,
   };
 };
 
