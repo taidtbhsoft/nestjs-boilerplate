@@ -16,6 +16,7 @@ describe('AuthController (e2e)', () => {
   beforeAll(async () => {
     app = await initTest();
   });
+  afterAll(() => app.close());
 
   it('/auth/register (POST)', () =>
     request(app.getHttpServer())
@@ -45,6 +46,4 @@ describe('AuthController (e2e)', () => {
       .get('/auth/me')
       .set({Authorization: `Bearer ${accessToken}`})
       .expect(200));
-
-  afterAll(() => app.close());
 });

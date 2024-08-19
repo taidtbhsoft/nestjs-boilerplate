@@ -22,10 +22,12 @@ import {AppConfigService} from '@config/app.config';
 import {initDBModules} from '@config/database.config';
 import {AuthModule} from '@modules/auth/auth.module';
 import {UserModule} from '@modules/user/user.module';
+import {EventsModule} from '@modules/events/events.module';
 
 @Module({
   imports: [
     ...initDBModules,
+    EventsModule,
     AuthModule,
     UserModule,
     ClsModule.forRoot({

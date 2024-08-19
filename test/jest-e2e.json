@@ -12,7 +12,7 @@
     "@common/(.*)$": "<rootDir>/../src/common/$1",
     "@modules/(.*)$": "<rootDir>/../src/modules/$1",
     "@config/(.*)$": "<rootDir>/../src/config/$1",
-    "@constants/(.*)$": "<rootDir>/../src/constants/$1",
-    "@constants": "<rootDir>/../src/constants"
+    "@constants/(.*)$": "<rootDir>/../src/common/constants/$1",
+    "@constants": "<rootDir>/../src/common/constants"
   }
 }
