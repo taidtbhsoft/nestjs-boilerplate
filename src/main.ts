@@ -1,29 +1,24 @@
 import {
   ClassSerializerInterceptor,
+  ConsoleLogger,
   HttpStatus,
   Logger,
   UnprocessableEntityException,
   ValidationPipe,
 } from '@nestjs/common';
-import { NestFactory, Reflector } from '@nestjs/core';
-import type { NestExpressApplication } from '@nestjs/platform-express';
-import { ExpressAdapter } from '@nestjs/platform-express';
+import {NestFactory, Reflector} from '@nestjs/core';
+import type {NestExpressApplication} from '@nestjs/platform-express';
+import {ExpressAdapter} from '@nestjs/platform-express';
 import compression from 'compression';
 import helmet from 'helmet';
-import morgan from 'morgan';
-import { initializeTransactionalContext } from 'typeorm-transactional';
+import {initializeTransactionalContext} from 'typeorm-transactional';
 
-import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './filters/bad-request.filter';
-import { QueryFailedFilter } from './filters/query-failed.filter';
-import { LoggingInterceptor } from './interceptors/logging.interceptor';
-import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
-import { TranslationInterceptor } from './interceptors/translation-interceptor.service';
-import { LoggerService } from './logger/logger.service';
-import { setupSwagger } from './setup-swagger';
-import { ApiConfigService } from './shared/services/api-config.service';
-import { TranslationService } from './shared/services/translation.service';
-import { SharedModule } from './shared/shared.module';
+import {AppModule} from '@/app.module';
+import {setupSwagger} from '@common/swagger/setup-swagger';
+import {SharedModule} from '@common/shared/shared.module';
+import {AppConfigService} from '@config/app.config';
+import {MicroserviceOptions, Transport} from '@nestjs/microservices';
+import {KAFKA_BROKER, KAFKA_GROUP_ID} from '@config/env.config';
 
 export async function bootstrap(): Promise<NestExpressApplication> {
   try {
@@ -31,31 +26,30 @@ export async function bootstrap(): Promise<NestExpressApplication> {
     const app = await NestFactory.create<NestExpressApplication>(
       AppModule,
       new ExpressAdapter(),
-      { cors: true },
+      {cors: true}
     );
+    KAFKA_BROKER &&
+      app.connectMicroservice<MicroserviceOptions>({
+        transport: Transport.KAFKA,
+        options: {
+          client: {
+            brokers: [KAFKA_BROKER],
+          },
+          consumer: {
+            groupId: KAFKA_GROUP_ID,
+          },
+        },
+      });
     app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
     app.use(helmet());
     // app.setGlobalPrefix('/api'); use api as global prefix if you don't have subdomain
     app.use(compression());
-    app.use(morgan('combined'));
     app.enableVersioning();
     app.setGlobalPrefix('/api/v1');
 
     const reflector = app.get(Reflector);
 
-    app.useGlobalFilters(
-      new HttpExceptionFilter(reflector),
-      new QueryFailedFilter(reflector),
-    );
-
-    app.useGlobalInterceptors(
-      new ClassSerializerInterceptor(reflector),
-      new TranslationInterceptor(
-        app.select(SharedModule).get(TranslationService),
-      ),
-      new LoggingInterceptor(),
-      new TimeoutInterceptor(),
-    );
+    app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
 
     app.useGlobalPipes(
       new ValidationPipe({
@@ -63,11 +57,11 @@ export async function bootstrap(): Promise<NestExpressApplication> {
         errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
         transform: true,
         dismissDefaultMessages: true,
-        exceptionFactory: (errors) => new UnprocessableEntityException(errors),
-      }),
+        exceptionFactory: errors => new UnprocessableEntityException(errors),
+      })
     );
 
-    const configService = app.select(SharedModule).get(ApiConfigService);
+    const configService = app.select(SharedModule).get(AppConfigService);
 
     if (configService.documentationEnabled) {
       setupSwagger(app);
@@ -78,8 +72,8 @@ export async function bootstrap(): Promise<NestExpressApplication> {
       app.enableShutdownHooks();
     }
 
-    app.useLogger(new LoggerService());
-
+    app.useLogger(new ConsoleLogger());
+    await app.startAllMicroservices();
     const port = configService.appConfig.port;
     await app.listen(port);
 

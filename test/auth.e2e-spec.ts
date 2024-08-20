@@ -1,8 +1,8 @@
-import { faker } from '@faker-js/faker';
-import type { INestApplication } from '@nestjs/common';
+import {faker} from '@faker-js/faker';
+import type {INestApplication} from '@nestjs/common';
 import request from 'supertest';
 
-import { initTest } from './init-testing-app';
+import {initTest} from './init-testing-app';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -10,12 +10,13 @@ describe('AuthController (e2e)', () => {
   // Init mock data
   const firstName = faker.person.firstName();
   const lastName = faker.person.lastName();
-  const email = faker.internet.email({ firstName, lastName });
+  const email = faker.internet.email({firstName, lastName});
   const password = 'password';
 
   beforeAll(async () => {
     app = await initTest();
   });
+  afterAll(() => app.close());
 
   it('/auth/register (POST)', () =>
     request(app.getHttpServer())
@@ -43,8 +44,6 @@ describe('AuthController (e2e)', () => {
   it('/auth/me (GET)', () =>
     request(app.getHttpServer())
       .get('/auth/me')
-      .set({ Authorization: `Bearer ${accessToken}` })
+      .set({Authorization: `Bearer ${accessToken}`})
       .expect(200));
-
-  afterAll(() => app.close());
 });

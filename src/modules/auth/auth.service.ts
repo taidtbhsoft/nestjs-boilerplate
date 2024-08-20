@@ -1,27 +1,26 @@
-import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import {Injectable, NotFoundException} from '@nestjs/common';
+import {JwtService} from '@nestjs/jwt';
 
-import { validateHash } from '../../common/utils';
-import type { RoleType } from '../../constants';
-import { TokenType } from '../../constants';
-import { UserNotFoundException } from '../../exceptions';
-import { ApiConfigService } from '../../shared/services/api-config.service';
-import type { UserEntity } from '../user/user.entity';
-import { UserService } from '../user/user.service';
-import { TokenPayloadDto } from './dto/token-payload.dto';
-import type { UserLoginDto } from './dto/user-login.dto';
+import type {RoleType} from '@constants';
+import {TokenType} from '@constants';
+import {validateHash} from '@common/utils';
+import {AppConfigService} from '@config/app.config';
+import {UserEntity} from '@common/entities/user.entity';
+import {UserService} from '@modules/user/user.service';
+import {TokenPayloadDto} from './dto/token-payload.dto';
+import type {UserLoginDto} from './dto/user-login.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
-    private configService: ApiConfigService,
-    private userService: UserService,
+    private configService: AppConfigService,
+    private userService: UserService
   ) {}
 
   async createAccessToken(data: {
     role: RoleType;
-    userId: Uuid;
+    userId: string;
   }): Promise<TokenPayloadDto> {
     return new TokenPayloadDto({
       expiresIn: this.configService.authConfig.jwtExpirationTime,
@@ -40,11 +39,11 @@ export class AuthService {
 
     const isPasswordValid = await validateHash(
       userLoginDto.password,
-      user?.password,
+      user?.password
     );
 
     if (!isPasswordValid) {
-      throw new UserNotFoundException();
+      throw new NotFoundException('error.userNotFound');
     }
 
     return user!;

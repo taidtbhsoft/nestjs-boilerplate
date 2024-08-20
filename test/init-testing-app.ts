@@ -1,9 +1,9 @@
-import type { INestApplication } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
-import { PostgreSqlContainer } from '@testcontainers/postgresql';
-import { initializeTransactionalContext } from 'typeorm-transactional';
+import type {INestApplication} from '@nestjs/common';
+import {Test} from '@nestjs/testing';
+import {PostgreSqlContainer} from '@testcontainers/postgresql';
+import {initializeTransactionalContext} from 'typeorm-transactional';
 
-import { AppModule } from '../src/app.module';
+import {AppModule} from '../src/app.module';
 
 let app: INestApplication;
 

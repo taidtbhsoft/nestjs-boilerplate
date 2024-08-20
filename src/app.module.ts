@@ -1,42 +1,35 @@
-import './boilerplate.polyfill';
+import '@common/boilerplate.polyfill';
 
 import path from 'node:path';
 
-import {
-  CacheInterceptor,
-  CacheModule,
-  CacheStore,
-} from '@nestjs/cache-manager';
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { ScheduleModule } from '@nestjs/schedule';
-import { ThrottlerModule } from '@nestjs/throttler';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import {CacheInterceptor, CacheModule, CacheStore} from '@nestjs/cache-manager';
+import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
+import {ConfigModule} from '@nestjs/config';
+import {APP_INTERCEPTOR} from '@nestjs/core';
+import {ScheduleModule} from '@nestjs/schedule';
+import {ThrottlerModule} from '@nestjs/throttler';
 import * as redisStore from 'cache-manager-redis-store';
-import { ClsModule } from 'nestjs-cls';
+import {ClsModule} from 'nestjs-cls';
 import {
   AcceptLanguageResolver,
   HeaderResolver,
   I18nModule,
   QueryResolver,
 } from 'nestjs-i18n';
-import type { RedisClientOptions } from 'redis';
-import { DataSource } from 'typeorm';
-import { addTransactionalDataSource } from 'typeorm-transactional';
-
-import { AuthModule } from './modules/auth/auth.module';
-import { PostModule } from './modules/post/post.module';
-import { UserModule } from './modules/user/user.module';
-import { LoggerMiddleware } from './shared/middleware/logger.middleware';
-import { ApiConfigService } from './shared/services/api-config.service';
-import { SharedModule } from './shared/shared.module';
+import {LoggerMiddleware} from '@common/shared/middleware/logger.middleware';
+import {SharedModule} from '@common/shared/shared.module';
+import {AppConfigService} from '@config/app.config';
+import {initDBModules} from '@config/database.config';
+import {AuthModule} from '@modules/auth/auth.module';
+import {UserModule} from '@modules/user/user.module';
+import {EventsModule} from '@modules/events/events.module';
 
 @Module({
   imports: [
+    ...initDBModules,
+    EventsModule,
     AuthModule,
     UserModule,
-    PostModule,
     ClsModule.forRoot({
       global: true,
       middleware: {
@@ -45,49 +38,34 @@ import { SharedModule } from './shared/shared.module';
     }),
     ThrottlerModule.forRootAsync({
       imports: [SharedModule],
-      useFactory: (configService: ApiConfigService) => ({
+      useFactory: (configService: AppConfigService) => ({
         throttlers: [configService.throttlerConfigs],
       }),
-      inject: [ApiConfigService],
+      inject: [AppConfigService],
     }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [SharedModule],
-      useFactory: (configService: ApiConfigService) =>
-        configService.postgresConfig,
-      inject: [ApiConfigService],
-      dataSourceFactory: (options) => {
-        if (!options) {
-          throw new Error('Invalid options passed');
-        }
-
-        return Promise.resolve(
-          addTransactionalDataSource(new DataSource(options)),
-        );
-      },
-    }),
     I18nModule.forRootAsync({
-      useFactory: (configService: ApiConfigService) => ({
+      useFactory: (configService: AppConfigService) => ({
         fallbackLanguage: configService.fallbackLanguage,
         loaderOptions: {
-          path: path.join(__dirname, '/i18n/'),
+          path: path.join(__dirname, '/common/i18n/'),
           watch: configService.isDevelopment,
         },
       }),
       resolvers: [
-        { use: QueryResolver, options: ['lang'] },
+        {use: QueryResolver, options: ['lang']},
         AcceptLanguageResolver,
         new HeaderResolver(['x-lang']),
       ],
       imports: [SharedModule],
-      inject: [ApiConfigService],
+      inject: [AppConfigService],
     }),
     ScheduleModule.forRoot(),
-    process.env.REDIS_CACHE_ENABLED === 'true'
-      ? CacheModule.register<RedisClientOptions>({
+    process.env.REDIS_HOST
+      ? CacheModule.register({
           isGlobal: true,
           ttl: 5, // seconds
           max: 10, // maximum number of items in cache
