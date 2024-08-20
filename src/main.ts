@@ -1,96 +1,91 @@
 import {
   ClassSerializerInterceptor,
+  ConsoleLogger,
   HttpStatus,
+  Logger,
   UnprocessableEntityException,
   ValidationPipe,
 } from '@nestjs/common';
-import { NestFactory, Reflector } from '@nestjs/core';
-import { Transport } from '@nestjs/microservices';
-import type { NestExpressApplication } from '@nestjs/platform-express';
-import { ExpressAdapter } from '@nestjs/platform-express';
+import {NestFactory, Reflector} from '@nestjs/core';
+import type {NestExpressApplication} from '@nestjs/platform-express';
+import {ExpressAdapter} from '@nestjs/platform-express';
 import compression from 'compression';
 import helmet from 'helmet';
-import morgan from 'morgan';
-import { initializeTransactionalContext } from 'typeorm-transactional';
+import {initializeTransactionalContext} from 'typeorm-transactional';
 
-import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './filters/bad-request.filter';
-import { QueryFailedFilter } from './filters/query-failed.filter';
-import { TranslationInterceptor } from './interceptors/translation-interceptor.service';
-import { setupSwagger } from './setup-swagger';
-import { ApiConfigService } from './shared/services/api-config.service';
-import { TranslationService } from './shared/services/translation.service';
-import { SharedModule } from './shared/shared.module';
+import {AppModule} from '@/app.module';
+import {setupSwagger} from '@common/swagger/setup-swagger';
+import {SharedModule} from '@common/shared/shared.module';
+import {AppConfigService} from '@config/app.config';
+import {MicroserviceOptions, Transport} from '@nestjs/microservices';
+import {KAFKA_BROKER, KAFKA_GROUP_ID} from '@config/env.config';
 
 export async function bootstrap(): Promise<NestExpressApplication> {
-  initializeTransactionalContext();
-  const app = await NestFactory.create<NestExpressApplication>(
-    AppModule,
-    new ExpressAdapter(),
-    { cors: true },
-  );
-  app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
-  app.use(helmet());
-  // app.setGlobalPrefix('/api'); use api as global prefix if you don't have subdomain
-  app.use(compression());
-  app.use(morgan('combined'));
-  app.enableVersioning();
+  try {
+    initializeTransactionalContext();
+    const app = await NestFactory.create<NestExpressApplication>(
+      AppModule,
+      new ExpressAdapter(),
+      {cors: true}
+    );
+    KAFKA_BROKER &&
+      app.connectMicroservice<MicroserviceOptions>({
+        transport: Transport.KAFKA,
+        options: {
+          client: {
+            brokers: [KAFKA_BROKER],
+          },
+          consumer: {
+            groupId: KAFKA_GROUP_ID,
+          },
+        },
+      });
+    app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
+    app.use(helmet());
+    // app.setGlobalPrefix('/api'); use api as global prefix if you don't have subdomain
+    app.use(compression());
+    app.enableVersioning();
+    app.setGlobalPrefix('/api/v1');
 
-  const reflector = app.get(Reflector);
+    const reflector = app.get(Reflector);
 
-  app.useGlobalFilters(
-    new HttpExceptionFilter(reflector),
-    new QueryFailedFilter(reflector),
-  );
+    app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
 
-  app.useGlobalInterceptors(
-    new ClassSerializerInterceptor(reflector),
-    new TranslationInterceptor(
-      app.select(SharedModule).get(TranslationService),
-    ),
-  );
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        transform: true,
+        dismissDefaultMessages: true,
+        exceptionFactory: errors => new UnprocessableEntityException(errors),
+      })
+    );
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      transform: true,
-      dismissDefaultMessages: true,
-      exceptionFactory: (errors) => new UnprocessableEntityException(errors),
-    }),
-  );
+    const configService = app.select(SharedModule).get(AppConfigService);
 
-  const configService = app.select(SharedModule).get(ApiConfigService);
+    if (configService.documentationEnabled) {
+      setupSwagger(app);
+    }
 
-  // only start nats if it is enabled
-  if (configService.natsEnabled) {
-    const natsConfig = configService.natsConfig;
-    app.connectMicroservice({
-      transport: Transport.NATS,
-      options: {
-        url: `nats://${natsConfig.host}:${natsConfig.port}`,
-        queue: 'main_service',
-      },
-    });
+    // Starts listening for shutdown hooks
+    if (!configService.isDevelopment) {
+      app.enableShutdownHooks();
+    }
 
+    app.useLogger(new ConsoleLogger());
     await app.startAllMicroservices();
+    const port = configService.appConfig.port;
+    await app.listen(port);
+
+    console.info(`server running on ${await app.getUrl()}`);
+
+    return app;
+  } catch (error) {
+    console.error(error);
+    Logger.error(`❌  Error starting server, ${error}`, '', 'Bootstrap', false);
+
+    throw new Error(`❌  Error starting server, ${error}`);
   }
-
-  if (configService.documentationEnabled) {
-    setupSwagger(app);
-  }
-
-  // Starts listening for shutdown hooks
-  if (!configService.isDevelopment) {
-    app.enableShutdownHooks();
-  }
-
-  const port = configService.appConfig.port;
-  await app.listen(port);
-
-  console.info(`server running on ${await app.getUrl()}`);
-
-  return app;
 }
 
 void bootstrap();

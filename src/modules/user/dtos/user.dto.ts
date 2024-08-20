@@ -1,40 +1,65 @@
-import { AbstractDto } from '../../../common/dto/abstract.dto';
-import { RoleType } from '../../../constants';
+import {ApiProperty} from '@nestjs/swagger';
 import {
-  BooleanFieldOptional,
-  EmailFieldOptional,
-  EnumFieldOptional,
-  PhoneFieldOptional,
-  StringFieldOptional,
-} from '../../../decorators';
-import type { UserEntity } from '../user.entity';
+  IsBoolean,
+  IsEmail,
+  IsEmpty,
+  IsEnum,
+  IsOptional,
+  IsString,
+  Length,
+} from 'class-validator';
+import {RoleType} from '@constants';
+import {AbstractDto} from '@common/dto/abstract.dto';
+import {UserEntity} from '@common/entities/user.entity';
 
 // TODO, remove this class and use constructor's second argument's type
-export type UserDtoOptions = Partial<{ isActive: boolean }>;
+export type UserDtoOptions = Partial<{isActive: boolean}>;
 
 export class UserDto extends AbstractDto {
-  @StringFieldOptional({ nullable: true })
+  @IsString()
+  @ApiProperty({name: 'firstName', type: String, required: false})
+  @IsEmpty()
   firstName?: string | null;
 
-  @StringFieldOptional({ nullable: true })
+  @IsString()
+  @ApiProperty({name: 'lastName', type: String, required: false})
+  @IsEmpty()
   lastName?: string | null;
 
-  @StringFieldOptional({ nullable: true })
+  @IsString()
+  @ApiProperty({name: 'username', type: String, required: false})
+  @IsEmpty()
   username!: string;
 
-  @EnumFieldOptional(() => RoleType)
+  @IsEmpty()
+  @ApiProperty({
+    name: 'role',
+    type: String,
+    required: false,
+    default: RoleType.USER,
+  })
+  @IsEnum(RoleType, {each: true})
   role?: RoleType;
 
-  @EmailFieldOptional({ nullable: true })
+  @IsOptional()
+  @IsEmail()
+  @ApiProperty({name: 'email', type: String, required: true})
   email?: string | null;
 
-  @StringFieldOptional({ nullable: true })
+  @IsString()
+  @ApiProperty({name: 'avatar', type: String, required: false})
+  @IsEmpty()
   avatar?: string | null;
 
-  @PhoneFieldOptional({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @ApiProperty({name: 'phone', type: String, required: false, minLength: 10})
+  @Length(10)
   phone?: string | null;
 
-  @BooleanFieldOptional()
+  @IsBoolean()
+  @ApiProperty({name: 'isActive', type: Boolean, required: false})
+  @IsEmpty()
   isActive?: boolean;
 
   constructor(user: UserEntity, options?: UserDtoOptions) {
