@@ -14,6 +14,7 @@ import {
   NODE_ENV,
 } from './env.config';
 import {DBNameConnections} from '@/common/constants/db-name';
+import {TokenEntity} from '@/common/entities/token.entity';
 
 const isTest = NODE_ENV === 'test';
 
@@ -34,7 +35,7 @@ export const postgresDefault = (): TypeOrmModuleOptions & {
   seeds: string[];
   factories: string[];
 } => {
-  const entities = [UserEntity];
+  const entities = [UserEntity, TokenEntity];
   const migrations = [
     `src/database/${DBNameConnections.DEFAULT}/migrations/*{.ts,.js}`,
   ];

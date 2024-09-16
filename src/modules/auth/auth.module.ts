@@ -8,10 +8,14 @@ import {AuthController} from './auth.controller';
 import {AuthService} from './auth.service';
 import {JwtStrategy} from './jwt.strategy';
 import {PublicStrategy} from './public.strategy';
+import {TypeOrmModule} from '@nestjs/typeorm';
+import {TokenEntity} from '@/common/entities/token.entity';
+import {DBNameConnections} from '@/common/constants/db-name';
 
 @Module({
   imports: [
     forwardRef(() => UserModule),
+    TypeOrmModule.forFeature([TokenEntity], DBNameConnections.DEFAULT),
     PassportModule.register({defaultStrategy: 'jwt'}),
     JwtModule.registerAsync({
       useFactory: (configService: AppConfigService) => ({

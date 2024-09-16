@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   HttpCode,
   HttpStatus,
   Post,
@@ -13,19 +14,14 @@ import {RoleType} from '@constants';
 import {Auth, AuthUser} from '@common/decorators';
 import {UserDto} from '@modules/user/dtos/user.dto';
 import {UserEntity} from '@common/entities/user.entity';
-import {UserService} from '@modules/user/user.service';
 import {AuthService} from './auth.service';
 import {LoginPayloadDto} from './dto/login-payload.dto';
 import {UserLoginDto} from './dto/user-login.dto';
-import {UserRegisterDto} from './dto/user-register.dto';
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
-  constructor(
-    private userService: UserService,
-    private authService: AuthService
-  ) {}
+  constructor(private authService: AuthService) {}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -41,22 +37,10 @@ export class AuthController {
     const token = await this.authService.createAccessToken({
       userId: userEntity.id,
       role: userEntity.role,
+      isRemember: userLoginDto.isRemember || false,
     });
 
     return new LoginPayloadDto(userEntity.toDto(), token);
-  }
-
-  @Post('register')
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({type: UserDto, description: 'Successfully Registered'})
-  async userRegister(
-    @Body() userRegisterDto: UserRegisterDto
-  ): Promise<UserDto> {
-    const createdUser = await this.userService.createUser(userRegisterDto);
-
-    return createdUser.toDto({
-      isActive: true,
-    });
   }
 
   @Version('1')
@@ -66,5 +50,20 @@ export class AuthController {
   @ApiOkResponse({type: UserDto, description: 'current user info'})
   getCurrentUser(@AuthUser() user: UserEntity): UserDto {
     return user.toDto();
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @Auth()
+  @ApiOkResponse({description: 'logout user'})
+  async userLogout(
+    @Headers('authorization') authorization: string,
+    @AuthUser() user: UserEntity
+  ) {
+    const token = authorization.split(' ')[1];
+    await this.authService.deleteTokenByToken(token, user.id);
+    return {
+      message: 'You have successfully logged out!',
+    };
   }
 }

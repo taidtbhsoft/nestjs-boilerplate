@@ -23,6 +23,7 @@ import {initDBModules} from '@config/database.config';
 import {AuthModule} from '@modules/auth/auth.module';
 import {UserModule} from '@modules/user/user.module';
 import {EventsModule} from '@modules/events/events.module';
+import {TasksService} from './cron/tasks.cron';
 
 @Module({
   imports: [
@@ -80,6 +81,7 @@ import {EventsModule} from '@modules/events/events.module';
         }),
   ],
   providers: [
+    TasksService,
     {
       provide: APP_INTERCEPTOR,
       useClass: CacheInterceptor,

@@ -1,9 +1,9 @@
 import {
+  BadRequestException,
   ClassSerializerInterceptor,
   ConsoleLogger,
   HttpStatus,
   Logger,
-  UnprocessableEntityException,
   ValidationPipe,
 } from '@nestjs/common';
 import {NestFactory, Reflector} from '@nestjs/core';
@@ -26,7 +26,7 @@ export async function bootstrap(): Promise<NestExpressApplication> {
     const app = await NestFactory.create<NestExpressApplication>(
       AppModule,
       new ExpressAdapter(),
-      {cors: true}
+      {cors: true, logger: ['error', 'warn', 'log', 'debug']}
     );
     KAFKA_BROKER &&
       app.connectMicroservice<MicroserviceOptions>({
@@ -54,10 +54,10 @@ export async function bootstrap(): Promise<NestExpressApplication> {
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
         transform: true,
         dismissDefaultMessages: true,
-        exceptionFactory: errors => new UnprocessableEntityException(errors),
+        exceptionFactory: errors => new BadRequestException(errors),
       })
     );
 
