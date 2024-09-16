@@ -25,7 +25,7 @@ export const postgresOptions: TypeOrmModuleOptions = {
   password: DB_PASSWORD,
   migrationsRun: true, //Auto run migrations when init connect db
   logging: ENABLE_ORM_LOGS,
-  synchronize: false, // can be false in production
+  synchronize: true, // can be false in production
   keepConnectionAlive: !isTest,
   dropSchema: isTest,
 };
